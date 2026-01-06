@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +30,18 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
         return categoryRepo.save(category);
+    }
+
+//    can only delete categories which do not have posts in them
+    @Override
+    public void deleteCategory(UUID id) {
+        Optional<Category> category = categoryRepo.findById(id);
+        if(category.isPresent()) {
+            if(!category.get().getPosts().isEmpty()) {
+                throw new IllegalStateException("category has posts");
+            }
+            categoryRepo.deleteById(id);
+        }
     }
 
 }

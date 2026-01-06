@@ -31,7 +31,7 @@ public class User {
     @Column(nullable = false)
     private String name;
 
-//    map this list of posts bu author in posts table
+//    map this list of posts to author in posts table
 //    and when author removed all its posts are removed
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
