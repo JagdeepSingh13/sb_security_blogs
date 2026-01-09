@@ -2,7 +2,6 @@ package com.example.blogs.services;
 
 import com.example.blogs.domain.entities.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
 
 public interface AuthenticationService {
 

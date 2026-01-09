@@ -35,6 +35,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final Long jwtExpiryMs = 86400000L;
 
+    public User register(User user) {
+        if (userRepo.findByEmail(user.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already registered");
+        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        return userRepo.save(user);
+    }
+
     @Override
     public UserDetails authenticate(String email, String password) {
         authenticationManager.authenticate(
@@ -71,16 +81,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .getBody();
 
         return claims.getSubject();
-    }
-
-    public User register(User user) {
-        if (userRepo.findByEmail(user.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already registered");
-        }
-
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        return userRepo.save(user);
     }
 
     private Key getSigningKey() {
