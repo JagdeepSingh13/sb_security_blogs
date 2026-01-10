@@ -1,5 +1,6 @@
 package com.example.blogs.services.impl;
 
+import com.example.blogs.domain.CreatePostRequest;
 import com.example.blogs.domain.PostStatus;
 import com.example.blogs.domain.entities.Category;
 import com.example.blogs.domain.entities.Post;
@@ -13,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -59,6 +62,27 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<Post> getDraftPosts(User user) {
         return postRepo.findAllByAuthorAndStatus(user, PostStatus.DRAFT);
+    }
+
+    @Override
+    @Transactional
+    public Post createPost(User user, CreatePostRequest createPostRequest) {
+        Post newPost = new Post();
+        newPost.setTitle(createPostRequest.getTitle());
+        newPost.setContent(createPostRequest.getContent());
+        newPost.setStatus(createPostRequest.getStatus());
+        newPost.setAuthor(user);
+        newPost.setReadingTime(createPostRequest.getReadingTime());
+
+        Category category = categoryService.getCategoryById(createPostRequest.getCategoryId());
+        newPost.setCategory(category);
+
+        Set<UUID> tagIds = createPostRequest.getTagIds();
+        List<Tag> tags = tagService.getTagByIds(tagIds);
+        newPost.setTags(new HashSet<>(tags));
+
+        return postRepo.save(newPost);
+
     }
 
 }
